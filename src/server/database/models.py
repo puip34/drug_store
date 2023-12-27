@@ -1,73 +1,119 @@
-from sqlalchemy import Column, Integer, String, Text, Date, ForeignKey, create_engine
-from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.sql import func
+# drug_store/src/server/database/models.py
 
-Base = declarative_base()
+from pydantic import BaseModel
+from typing import List
 
-# User model
-class User(Base):
-    __tablename__ = "users"
+class UserBase(BaseModel):
+    username: str
+    email: str
+    role: str
 
-    id = Column(Integer, primary_key=True, index=True)
-    username = Column(String, index=True)
-    password = Column(String)
-    role = Column(String, index=True)
+class UserCreate(UserBase):
+    password: str
 
-# Drug model
-class Drug(Base):
-    __tablename__ = "drugs"
+class User(UserBase):
+    id: int
 
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, index=True)
-    description = Column(Text)
+    class Config:
+        orm_mode = True
 
-# Application model
-class Application(Base):
-    __tablename__ = "applications"
+class DrugBase(BaseModel):
+    name: str
+    description: str
 
-    id = Column(Integer, primary_key=True, index=True)
-    number = Column(String, index=True)
-    date_added = Column(Date, default=func.now())
-    drug_id = Column(Integer, ForeignKey("drugs.id"))
-    customer_data = Column(String)
-    status = Column(String)
-    # Add other fields as needed
+class DrugCreate(DrugBase):
+    pass
 
-    drug = relationship("Drug", back_populates="applications")
+class Drug(DrugBase):
+    id: int
 
-# Seller model
-class Seller(Base):
-    __tablename__ = "sellers"
+    class Config:
+        orm_mode = True
 
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, index=True)
-    # Add other fields as needed
+class ApplicationBase(BaseModel):
+    application_number: int
+    date_added: str
+    drug_id: int
+    customer_data: str
+    status: str
 
-# Comment model
-class Comment(Base):
-    __tablename__ = "comments"
+class ApplicationCreate(ApplicationBase):
+    pass
 
-    id = Column(Integer, primary_key=True, index=True)
-    application_id = Column(Integer, ForeignKey("applications.id"))
-    user_id = Column(Integer, ForeignKey("users.id"))
-    comment_text = Column(Text)
-    timestamp = Column(Date, default=func.now())
+class Application(ApplicationBase):
+    id: int
 
-    application = relationship("Application", back_populates="comments")
-    user = relationship("User", back_populates="comments")
+    class Config:
+        orm_mode = True
 
-# Add other models as needed
+# Add the new tables below
 
-# Define the relationship between Drug and Application
-Drug.applications = relationship("Application", back_populates="drug")
+# UserRole model
+class UserRoleBase(BaseModel):
+    user_id: int
+    role_id: int
 
-# Define the relationship between Application and Comment
-Application.comments = relationship("Comment", back_populates="application")
+class UserRoleCreate(UserRoleBase):
+    pass
 
-# Create the SQLite database engine
-DATABASE_URL = "sqlite:///./drug_store.db"
-engine = create_engine(DATABASE_URL)
+class UserRole(UserRoleBase):
+    id: int
 
-# Create tables
-Base.metadata.create_all(bind=engine)
+    class Config:
+        orm_mode = True
+
+# ProjectUserRole model (assuming it's related to projects, adjust as needed)
+class ProjectUserRoleBase(BaseModel):
+    project_id: int
+    user_id: int
+    role_id: int
+
+class ProjectUserRoleCreate(ProjectUserRoleBase):
+    pass
+
+class ProjectUserRole(ProjectUserRoleBase):
+    id: int
+
+    class Config:
+        orm_mode = True
+
+# CompletedProject model
+class CompletedProjectBase(BaseModel):
+    project_id: int
+    completion_date: str
+
+class CompletedProjectCreate(CompletedProjectBase):
+    pass
+
+class CompletedProject(CompletedProjectBase):
+    id: int
+
+    class Config:
+        orm_mode = True
+
+# TaskStatus model
+class TaskStatusBase(BaseModel):
+    status_name: str
+
+class TaskStatusCreate(TaskStatusBase):
+    pass
+
+class TaskStatus(TaskStatusBase):
+    id: int
+
+    class Config:
+        orm_mode = True
+
+# TaskHistory model
+class TaskHistoryBase(BaseModel):
+    task_id: int
+    status_id: int
+
+class TaskHistoryCreate(TaskHistoryBase):
+    pass
+
+class TaskHistory(TaskHistoryBase):
+    id: int
+
+    class Config:
+        orm_mode = True
