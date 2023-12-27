@@ -1,30 +1,12 @@
-from enum import Enum
-from pydantic import BaseModel
-from typing import List
-
-class NotificationType(str, Enum):
-    INFO = "info"
-    WARNING = "warning"
-    ERROR = "error"
-
-class Notification(BaseModel):
-    type: NotificationType
-    message: str
-
 class NotificationManager:
-    notifications: List[Notification] = []
+    def __init__(self):
+        self.notifications = []
 
-    @classmethod
-    def add_notification(cls, type: NotificationType, message: str):
-        notification = Notification(type=type, message=message)
-        cls.notifications.append(notification)
+    def add_notification(self, notification_type, message):
+        self.notifications.append({"type": notification_type, "message": message})
 
-    @classmethod
-    def get_notifications(cls) -> List[Notification]:
-        return cls.notifications
+    def get_notifications(self):
+        return self.notifications
 
-    @classmethod
-    def clear_notifications(cls):
-        cls.notifications = []
-
-notification_manager = NotificationManager()
+    def clear_notifications(self):
+        self.notifications = []
