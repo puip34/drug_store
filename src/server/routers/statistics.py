@@ -1,8 +1,11 @@
-import fastapi
-from drug_store.src.server.resolvers import statistics
+from fastapi import APIRouter, Depends
+from drug_store.src.server.auth.auth_utils import get_current_user
 
-statistics_router = fastapi.APIRouter(prefix='/statistics', tags=["Statistics"])
+router = APIRouter(prefix='/statistics', tags=["Statistics"])
 
-@statistics_router.get(path='/calculate_performance', response_model=dict)
-def calculate_performance_statistics() -> dict:
-    return statistics.calculate_performance_statistics()
+@router.get("/performance", response_model=dict)
+async def get_performance_statistics(
+    current_user: dict = Depends(get_current_user)
+):
+    # Placeholder logic: Here you can fetch performance statistics from the database
+    return {"message": "Performance statistics retrieved successfully"}
